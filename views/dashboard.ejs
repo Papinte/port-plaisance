@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tableau de bord</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .form-section { display: none; margin-top: 10px; }
+        .form-section.active { display: block; }
+        button { margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Tableau de bord - Port de Plaisance Russell</h1>
+
+    <% if (error) { %>
+        <p style="color: red;"><%= error %></p>
+    <% } %>
+
+    <h2>Actions disponibles</h2>
+
+    <!-- Boutons pour les utilisateurs -->
+    <h3>Utilisateurs</h3>
+    <button onclick="showForm('create-user')">Créer un utilisateur</button>
+    <button onclick="showForm('modify-user')">Modifier un utilisateur</button>
+    <button onclick="showForm('delete-user')">Supprimer un utilisateur</button>
+    <button onclick="showForm('details-user')">Afficher détails d’un utilisateur</button>
+
+    <!-- Boutons pour les catways -->
+    <h3>Catways</h3>
+    <button onclick="showForm('create-catway')">Créer un catway</button>
+    <button onclick="showForm('modify-catway-state')">Modifier l'état d'un catway</button>
+    <button onclick="showForm('delete-catway')">Supprimer un catway</button>
+    <button onclick="showForm('details-catway')">Afficher détails d’un catway</button>
+
+    <!-- Boutons pour les réservations -->
+    <h3>Réservations</h3>
+    <button onclick="showForm('create-reservation')">Créer une réservation</button>
+    <button onclick="showForm('delete-reservation')">Supprimer une réservation</button>
+    <button onclick="showForm('details-reservation')">Afficher détails d’une réservation</button>
+
+    <!-- Formulaire pour créer un utilisateur -->
+    <div id="create-user" class="form-section">
+        <h3>Créer un utilisateur</h3>
+        <form action="/users/create" method="POST">
+            <input type="text" name="name" placeholder="Nom" required><br>
+            <input type="email" name="email" placeholder="Email" required><br>
+            <input type="password" name="password" placeholder="Mot de passe" required><br>
+            <button type="submit">Créer utilisateur</button>
+            <button type="button" onclick="hideForm('create-user')">Annuler</button>
+        </form>
+    </div>
+
+    <!-- Formulaire pour modifier un utilisateur -->
+    <div id="modify-user" class="form-section">
+        <h3>Modifier un utilisateur</h3>
+        <form action="/users/modify" method="POST">
+            <input type="text" name="id" placeholder="ID de l'utilisateur" required><br>
+            <input type="text" name="name" placeholder="Nouveau nom"><br>
+            <input type="email" name="email" placeholder="Nouvel email"><br>
+            <input type="password" name="password" placeholder="Nouveau mot de passe"><br>
+            <button type="submit">Modifier utilisateur</button>
+            <button type="button" onclick="hideForm('modify-user')">Annuler</button>
+        </form>
+    </div>
+
+    <!-- Formulaire pour supprimer un utilisateur -->
+    <div id="delete-user" class="form-section">
+        <h3>Supprimer un utilisateur</h3>
+        <form action="/users/delete" method="POST">
+            <input type="text" name="id" placeholder="ID de l'utilisateur" required><br>
+            <button type="submit">Supprimer utilisateur</button>
+            <button type="button" onclick="hideForm('delete-user')">Annuler</button>
+        </form>
+    </div>
+
+    <!-- Formulaire pour afficher les détails d'un utilisateur -->
+    <div id="details-user" class="form-section">
+        <h3>Afficher les détails d’un utilisateur</h3>
+        <form action="/users/details" method="GET">
+            <input type="text" name="id" placeholder="ID de l'utilisateur" required><br>
+            <button type="submit">Afficher détails</button>
+            <button type="button" onclick="hideForm('details-user')">Annuler</button>
+        </form>
+    </div>
+
+    <!-- Formulaire pour créer un catway -->
+    <div id="create-catway" class="form-section">
+        <h3>Créer un catway</h3>
+        <form action="/catways/create" method="POST">
+            <input type="number" name="catwayNumber" placeholder="Numéro" required><br>
+            <select name="type" required>
+                <option value="long">Long</option>
+                <option value="short">Short</option>
+            </select><br>
+            <input type="text" name="catwayState" placeholder="État" required><br>
+            <button type="submit">Créer catway</button>
+            <button type="button" onclick="hideForm('create-catway')">Annuler</button>
+        </form>
+    </div>
+
+    <!-- Formulaire pour modifier l'état d'un catway -->
+    <div id="modify-catway-state" class="form-section">
+        <h3>Modifier l'état d'un catway</h3>
+        <form action="/catways/modify-state" method="POST">
+            <input type="text" name="id" placeholder="ID du catway" required><br>
+            <input type="text" name="catwayState" placeholder="Nouvel état" required><br>
+            <button type="submit">Modifier état</button>
+            <button type="button" onclick="hideForm('modify-catway-state')">Annuler</button>
+        </form>
+    </div>
+
+    <!-- Formulaire pour supprimer un catway -->
+    <div id="delete-catway" class="form-section">
+        <h3>Supprimer un catway</h3>
+        <form action="/catways/delete" method="POST">
+            <input type="text" name="id" placeholder="ID du catway" required><br>
+            <button type="submit">Supprimer catway</button>
+            <button type="button" onclick="hideForm('delete-catway')">Annuler</button>
+        </form>
+    </div>
+
+    <!-- Formulaire pour afficher les détails d'un catway -->
+    <div id="details-catway" class="form-section">
+        <h3>Afficher les détails d’un catway</h3>
+        <form action="/catways/details" method="GET">
+            <input type="text" name="id" placeholder="ID du catway" required><br>
+            <button type="submit">Afficher détails</button>
+            <button type="button" onclick="hideForm('details-catway')">Annuler</button>
+        </form>
+    </div>
+
+    <!-- Formulaire pour créer une réservation -->
+    <div id="create-reservation" class="form-section">
+        <h3>Créer une réservation</h3>
+        <form action="/reservations/create" method="POST">
+            <input type="text" name="clientName" placeholder="Nom client" required><br>
+            <input type="text" name="boatName" placeholder="Nom bateau" required><br>
+            <input type="datetime-local" name="checkIn" required><br>
+            <input type="datetime-local" name="checkOut" required><br>
+            <button type="submit">Créer réservation</button>
+            <button type="button" onclick="hideForm('create-reservation')">Annuler</button>
+        </form>
+    </div>
+
+    <!-- Formulaire pour supprimer une réservation -->
+    <div id="delete-reservation" class="form-section">
+        <h3>Supprimer une réservation</h3>
+        <form action="/reservations/delete" method="POST">
+            <input type="text" name="id" placeholder="ID de la réservation" required><br>
+            <button type="submit">Supprimer réservation</button>
+            <button type="button" onclick="hideForm('delete-reservation')">Annuler</button>
+        </form>
+    </div>
+
+    <!-- Formulaire pour afficher les détails d'une réservation -->
+    <div id="details-reservation" class="form-section">
+        <h3>Afficher les détails d’une réservation</h3>
+        <form action="/reservations/details" method="GET">
+            <input type="text" name="id" placeholder="ID de la réservation" required><br>
+            <button type="submit">Afficher détails</button>
+            <button type="button" onclick="hideForm('details-reservation')">Annuler</button>
+        </form>
+    </div>
+
+    <p><a href="/catways">Liste des catways</a></p>
+    <p><a href="/reservations">Liste des réservations</a></p>
+
+    <script>
+        function showForm(formId) {
+            // Cacher tous les formulaires
+            document.querySelectorAll('.form-section').forEach(form => {
+                form.classList.remove('active');
+            });
+            // Afficher le formulaire sélectionné
+            document.getElementById(formId).classList.add('active');
+        }
+
+        function hideForm(formId) {
+            document.getElementById(formId).classList.remove('active');
+        }
+    </script>
+</body>
+</html>

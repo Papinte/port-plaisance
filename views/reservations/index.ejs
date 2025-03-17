@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Liste des réservations</title>
+  </head>
+  <body>
+    <h1>Liste des réservations</h1>
+    <ul>
+      <% reservations.forEach(reservation => { %>
+      <li>
+        <%= reservation.clientName %> - <%= reservation.boatName %> (<a
+          href="/reservations/<%= reservation._id %>"
+          >Détails</a
+        >)
+      </li>
+      <% }) %>
+    </ul>
+    <a href="/dashboard">Retour au tableau de bord</a>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails</title>
+</head>
+<body>
+    <h1>Détails de la réservation</h1>
+    <p>Client : <%= reservation.clientName %></p>
+    <p>Bateau : <%= reservation.boatName %></p>
+    <p>Début : <%= new Date(reservation.checkIn).toLocaleString() %></p>
+    <p>Fin : <%= new Date(reservation.checkOut).toLocaleString() %></p>
+    <a href="/reservations">Retour à la liste</a>
+</body>
+</html>
