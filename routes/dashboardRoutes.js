@@ -17,7 +17,6 @@ router.get('/dashboard', async (req, res) => {
 
 // Créer un utilisateur
 router.post('/users/create', async (req, res) => {
-    console.log('Requête POST /users/create avec:', req.body);
     try {
         const { name, email, password } = req.body;
         const user = new User({ name, email, password });
@@ -25,8 +24,7 @@ router.post('/users/create', async (req, res) => {
         const message = `Utilisateur "${name}" créé avec succès ! ID: ${user._id}`;
         res.render('dashboard', { title: 'Tableau de bord', error: null, message });
     } catch (err) {
-        console.log('Erreur dans POST /users/create:', err);
-        res.render('dashboard', { title: 'Tableau de bord', error: 'Erreur lors de la création de l’utilisateur : ' + err.message, message: null });
+        res.render('dashboard', { title: 'Tableau de bord', error: 'Erreur : ' + err.message, message: null });
     }
 });
 

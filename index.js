@@ -11,32 +11,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Configurer EJS (corriger la clé 'view engine')
-app.set('view engine', 'ejs'); // Correction ici
-app.set('views', path.join(__dirname, 'views')); // Assurer que le chemin est correct
-
-// Middleware pour servir des fichiers statiques
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 app.use(express.static('public'));
 
-// Connexion à MongoDB
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('Connecté à MongoDB:', process.env.MONGO_URI))
     .catch(err => console.error('Erreur MongoDB:', err));
 
-// Importer les middlewares
 const authenticateToken = require('./middlewares/authMiddleware');
-
-// Importer les modèles
-const Catway = require('./models/Catway');
-const Reservation = require('./models/Reservation');
-
-// Importer les routes
 const catwayRoutes = require('./routes/catwayRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
 const authRoutes = require('./routes/authRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 
-// Routes publiques (sans authentification)
+// Routes publiques
 app.get('/', (req, res) => {
     res.render('index', { title: 'Accueil - Port de Plaisance Russell', error: null });
 });
@@ -47,91 +36,59 @@ app.get('/docs', (req, res) => {
 
 app.use('/auth', authRoutes);
 
-// Routes protégées (avec authentification)
-app.use('/dashboard', authenticateToken, dashboardRoutes);
+// Routes API protégées
 app.use('/api/catways', authenticateToken, catwayRoutes);
 app.use('/api/catways/:id/reservations', authenticateToken, reservationRoutes);
 
-// Routes protégées pour les pages HTML
+// Routes HTML protégées
+app.use('/dashboard', authenticateToken, dashboardRoutes);
+
+// Routes HTML spécifiques pour les listes et détails
 app.get('/catways', authenticateToken, async (req, res) => {
     try {
-        const catways = await Catway.find();
+        const catways = await require('./models/Catway').find();
         res.render('catways/index', { title: 'Liste des catways', catways });
     } catch (err) {
-        res.status(500).send('Erreur lors de la récupération des catways');
+        res.status(500).json({ error: 'Erreur : ' + err.message });
     }
 });
 
 app.get('/catways/:id', authenticateToken, async (req, res) => {
     try {
-        const catway = await Catway.findById(req.params.id);
-        if (!catway) return res.status(404).send('Catway non trouvé');
+        const catway = await require('./models/Catway').findById(req.params.id);
+        if (!catway) return res.status(404).json({ error: 'Catway non trouvé' });
         res.render('catways/details', { title: 'Détails du catway', catway });
     } catch (err) {
-        res.status(500).send('Erreur lors de la récupération des détails du catway');
-    }
-});
-
-app.get('/catways/details', authenticateToken, async (req, res) => {
-    console.log('Requête GET /catways/details avec id:', req.query.id);
-    try {
-        const { id } = req.query;
-        if (!id) {
-            throw new Error('ID non fourni dans la requête');
-        }
-        const catway = await Catway.findById(id);
-        console.log('Catway trouvé:', catway);
-        if (!catway) {
-            console.log('Catway non trouvé pour ID:', id);
-            return res.render('dashboard', { title: 'Tableau de bord', error: 'Catway non trouvé' });
-        }
-        res.render('catways/details', { title: 'Détails du catway', catway });
-    } catch (err) {
-        console.log('Erreur dans GET /catways/details:', err);
-        res.render('dashboard', { title: 'Tableau de bord', error: 'Erreur lors de la récupération des détails : ' + err.message });
+        res.status(500).json({ error: 'Erreur : ' + err.message });
     }
 });
 
 app.get('/reservations', authenticateToken, async (req, res) => {
     try {
-        const reservations = await Reservation.find();
+        const reservations = await require('./models/Reservation').find();
         res.render('reservations/index', { title: 'Liste des réservations', reservations });
     } catch (err) {
-        res.status(500).send('Erreur lors de la récupération des réservations');
+        res.status(500).json({ error: 'Erreur : ' + err.message });
     }
 });
 
 app.get('/reservations/:id', authenticateToken, async (req, res) => {
     try {
-        const reservation = await Reservation.findById(req.params.id);
-        if (!reservation) return res.status(404).send('Réservation non trouvée');
+        const reservation = await require('./models/Reservation').findById(req.params.id);
+        if (!reservation) return res.status(404).json({ error: 'Réservation non trouvée' });
         res.render('reservations/details', { title: 'Détails de la réservation', reservation });
     } catch (err) {
-        res.status(500).send('Erreur lors de la récupération des détails de la réservation');
+        res.status(500).json({ error: 'Erreur : ' + err.message });
     }
 });
 
-app.get('/reservations/details', authenticateToken, async (req, res) => {
-    try {
-        const { id } = req.query;
-        const reservation = await Reservation.findById(id);
-        if (!reservation) return res.render('dashboard', { title: 'Tableau de bord', error: 'Réservation non trouvée' });
-        res.render('reservations/details', { title: 'Détails de la réservation', reservation });
-    } catch (err) {
-        res.render('dashboard', { title: 'Tableau de bord', error: 'Erreur lors de la récupération des détails : ' + err.message });
-    }
-});
-
-// Middleware pour capturer les erreurs non gérées
 app.use((err, req, res, next) => {
     console.error('Erreur non gérée:', err);
-    res.status(500).send('Une erreur est survenue sur le serveur. Vérifiez le terminal pour plus de détails.');
+    res.status(500).json({ error: 'Une erreur est survenue sur le serveur.' });
 });
 
-// Ajoute cette ligne pour exporter l'app pour les tests
 module.exports = app;
 
-// Démarrage du serveur
 app.listen(PORT, () => {
     console.log(`Serveur démarré sur le port ${PORT}`);
 });

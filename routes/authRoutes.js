@@ -18,4 +18,9 @@ router.post('/register', async (req, res) => {
 // Route pour se connecter
 router.post('/login', authController.login);
 
+router.get('/logout', (req, res) => {
+    res.clearCookie('token');
+    res.redirect('/');
+});
+
 module.exports = router;

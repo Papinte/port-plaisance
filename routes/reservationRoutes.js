@@ -1,10 +1,10 @@
 const express = require('express');
-const router = express.Router({ mergeParams: true }); // mergeParams pour accéder à :id
+const router = express.Router({ mergeParams: true });
 const reservationController = require('../controllers/reservationController');
 
 router.get('/', reservationController.getAllReservations);
-router.get('/:idReservation', reservationController.getReservationById);
+router.get('/:reservationId', reservationController.getReservationById);
 router.post('/', reservationController.createReservation);
-router.delete('/:idReservation', reservationController.deleteReservation);
+router.delete('/:reservationId', reservationController.deleteReservation);
 
 module.exports = router;
