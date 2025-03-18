@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>Tableau de bord</title>
-    <link rel="stylesheet" href="/styles.css">
     <style>
         .form-section { display: none; margin-top: 10px; }
         .form-section.active { display: block; }
         button { margin: 5px; }
+        .message { color: green; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -15,6 +15,9 @@
 
     <% if (error) { %>
         <p style="color: red;"><%= error %></p>
+    <% } %>
+    <% if (message) { %>
+        <p class="message"><%= message %></p>
     <% } %>
 
     <h2>Actions disponibles</h2>
@@ -42,7 +45,7 @@
     <!-- Formulaire pour créer un utilisateur -->
     <div id="create-user" class="form-section">
         <h3>Créer un utilisateur</h3>
-        <form action="/users/create" method="POST">
+        <form action="/dashboard/users/create" method="POST">
             <input type="text" name="name" placeholder="Nom" required><br>
             <input type="email" name="email" placeholder="Email" required><br>
             <input type="password" name="password" placeholder="Mot de passe" required><br>
@@ -54,7 +57,7 @@
     <!-- Formulaire pour modifier un utilisateur -->
     <div id="modify-user" class="form-section">
         <h3>Modifier un utilisateur</h3>
-        <form action="/users/modify" method="POST">
+        <form action="/dashboard/users/modify" method="POST">
             <input type="text" name="id" placeholder="ID de l'utilisateur" required><br>
             <input type="text" name="name" placeholder="Nouveau nom"><br>
             <input type="email" name="email" placeholder="Nouvel email"><br>
@@ -67,7 +70,7 @@
     <!-- Formulaire pour supprimer un utilisateur -->
     <div id="delete-user" class="form-section">
         <h3>Supprimer un utilisateur</h3>
-        <form action="/users/delete" method="POST">
+        <form action="/dashboard/users/delete" method="POST">
             <input type="text" name="id" placeholder="ID de l'utilisateur" required><br>
             <button type="submit">Supprimer utilisateur</button>
             <button type="button" onclick="hideForm('delete-user')">Annuler</button>
@@ -77,7 +80,7 @@
     <!-- Formulaire pour afficher les détails d'un utilisateur -->
     <div id="details-user" class="form-section">
         <h3>Afficher les détails d’un utilisateur</h3>
-        <form action="/users/details" method="GET">
+        <form action="/dashboard/users/details" method="GET">
             <input type="text" name="id" placeholder="ID de l'utilisateur" required><br>
             <button type="submit">Afficher détails</button>
             <button type="button" onclick="hideForm('details-user')">Annuler</button>
@@ -87,7 +90,7 @@
     <!-- Formulaire pour créer un catway -->
     <div id="create-catway" class="form-section">
         <h3>Créer un catway</h3>
-        <form action="/catways/create" method="POST">
+        <form action="/dashboard/catways/create" method="POST">
             <input type="number" name="catwayNumber" placeholder="Numéro" required><br>
             <select name="type" required>
                 <option value="long">Long</option>
@@ -102,7 +105,7 @@
     <!-- Formulaire pour modifier l'état d'un catway -->
     <div id="modify-catway-state" class="form-section">
         <h3>Modifier l'état d'un catway</h3>
-        <form action="/catways/modify-state" method="POST">
+        <form action="/dashboard/catways/modify-state" method="POST">
             <input type="text" name="id" placeholder="ID du catway" required><br>
             <input type="text" name="catwayState" placeholder="Nouvel état" required><br>
             <button type="submit">Modifier état</button>
@@ -113,7 +116,7 @@
     <!-- Formulaire pour supprimer un catway -->
     <div id="delete-catway" class="form-section">
         <h3>Supprimer un catway</h3>
-        <form action="/catways/delete" method="POST">
+        <form action="/dashboard/catways/delete" method="POST">
             <input type="text" name="id" placeholder="ID du catway" required><br>
             <button type="submit">Supprimer catway</button>
             <button type="button" onclick="hideForm('delete-catway')">Annuler</button>
@@ -123,8 +126,8 @@
     <!-- Formulaire pour afficher les détails d'un catway -->
     <div id="details-catway" class="form-section">
         <h3>Afficher les détails d’un catway</h3>
-        <form action="/catways/details" method="GET">
-            <input type="text" name="id" placeholder="ID du catway" required><br>
+        <form id="details-catway-form" onsubmit="redirectToCatwayDetails(event)">
+            <input type="text" id="catway-id" name="id" placeholder="ID du catway" required><br>
             <button type="submit">Afficher détails</button>
             <button type="button" onclick="hideForm('details-catway')">Annuler</button>
         </form>
@@ -133,7 +136,8 @@
     <!-- Formulaire pour créer une réservation -->
     <div id="create-reservation" class="form-section">
         <h3>Créer une réservation</h3>
-        <form action="/reservations/create" method="POST">
+        <form action="/dashboard/reservations/create" method="POST">
+            <input type="number" name="catwayNumber" placeholder="Numéro du catway" required><br>
             <input type="text" name="clientName" placeholder="Nom client" required><br>
             <input type="text" name="boatName" placeholder="Nom bateau" required><br>
             <input type="datetime-local" name="checkIn" required><br>
@@ -146,7 +150,7 @@
     <!-- Formulaire pour supprimer une réservation -->
     <div id="delete-reservation" class="form-section">
         <h3>Supprimer une réservation</h3>
-        <form action="/reservations/delete" method="POST">
+        <form action="/dashboard/reservations/delete" method="POST">
             <input type="text" name="id" placeholder="ID de la réservation" required><br>
             <button type="submit">Supprimer réservation</button>
             <button type="button" onclick="hideForm('delete-reservation')">Annuler</button>
@@ -156,8 +160,8 @@
     <!-- Formulaire pour afficher les détails d'une réservation -->
     <div id="details-reservation" class="form-section">
         <h3>Afficher les détails d’une réservation</h3>
-        <form action="/reservations/details" method="GET">
-            <input type="text" name="id" placeholder="ID de la réservation" required><br>
+        <form id="details-reservation-form" onsubmit="redirectToReservationDetails(event)">
+            <input type="text" id="reservation-id" name="id" placeholder="ID de la réservation" required><br>
             <button type="submit">Afficher détails</button>
             <button type="button" onclick="hideForm('details-reservation')">Annuler</button>
         </form>
@@ -179,6 +183,24 @@
         function hideForm(formId) {
             document.getElementById(formId).classList.remove('active');
         }
+        function redirectToCatwayDetails(event) {
+        event.preventDefault(); // Empêche la soumission classique du formulaire
+        const id = document.getElementById('catway-id').value;
+        if (id) {
+            window.location.href = `/catways/${id}`; // Redirige vers /catways/:id
+        } else {
+            alert('Veuillez entrer un ID valide.');
+        }
+    }
+    function redirectToReservationDetails(event) {
+        event.preventDefault(); // Empêche la soumission classique du formulaire
+        const id = document.getElementById('reservation-id').value;
+        if (id) {
+            window.location.href = `/reservations/${id}`; // Redirige vers /reservations/:id
+        } else {
+            alert('Veuillez entrer un ID valide.');
+        }
+    }
     </script>
 </body>
 </html>
