@@ -7,6 +7,7 @@
 </head>
 <body>
     <h1>Détails de la réservation</h1>
+    <p>ID : <%= reservation._id %></p>
     <p>Client : <%= reservation.clientName %></p>
     <p>Bateau : <%= reservation.boatName %></p>
     <p>Début : <%= new Date(reservation.checkIn).toLocaleString() %></p>
