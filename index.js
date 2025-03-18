@@ -73,12 +73,21 @@ app.get('/catways/:id', authenticateToken, async (req, res) => {
 });
 
 app.get('/catways/details', authenticateToken, async (req, res) => {
+    console.log('Requête GET /catways/details avec id:', req.query.id);
     try {
         const { id } = req.query;
+        if (!id) {
+            throw new Error('ID non fourni dans la requête');
+        }
         const catway = await Catway.findById(id);
-        if (!catway) return res.render('dashboard', { title: 'Tableau de bord', error: 'Catway non trouvé' });
+        console.log('Catway trouvé:', catway);
+        if (!catway) {
+            console.log('Catway non trouvé pour ID:', id);
+            return res.render('dashboard', { title: 'Tableau de bord', error: 'Catway non trouvé' });
+        }
         res.render('catways/details', { title: 'Détails du catway', catway });
     } catch (err) {
+        console.log('Erreur dans GET /catways/details:', err);
         res.render('dashboard', { title: 'Tableau de bord', error: 'Erreur lors de la récupération des détails : ' + err.message });
     }
 });

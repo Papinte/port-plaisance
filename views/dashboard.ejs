@@ -126,8 +126,8 @@
     <!-- Formulaire pour afficher les détails d'un catway -->
     <div id="details-catway" class="form-section">
         <h3>Afficher les détails d’un catway</h3>
-        <form action="/dashboard/catways/details" method="GET">
-            <input type="text" name="id" placeholder="ID du catway" required><br>
+        <form id="details-catway-form" onsubmit="redirectToCatwayDetails(event)">
+            <input type="text" id="catway-id" name="id" placeholder="ID du catway" required><br>
             <button type="submit">Afficher détails</button>
             <button type="button" onclick="hideForm('details-catway')">Annuler</button>
         </form>
@@ -137,6 +137,7 @@
     <div id="create-reservation" class="form-section">
         <h3>Créer une réservation</h3>
         <form action="/dashboard/reservations/create" method="POST">
+            <input type="number" name="catwayNumber" placeholder="Numéro du catway" required><br>
             <input type="text" name="clientName" placeholder="Nom client" required><br>
             <input type="text" name="boatName" placeholder="Nom bateau" required><br>
             <input type="datetime-local" name="checkIn" required><br>
@@ -159,8 +160,8 @@
     <!-- Formulaire pour afficher les détails d'une réservation -->
     <div id="details-reservation" class="form-section">
         <h3>Afficher les détails d’une réservation</h3>
-        <form action="/dashboard/reservations/details" method="GET">
-            <input type="text" name="id" placeholder="ID de la réservation" required><br>
+        <form id="details-reservation-form" onsubmit="redirectToReservationDetails(event)">
+            <input type="text" id="reservation-id" name="id" placeholder="ID de la réservation" required><br>
             <button type="submit">Afficher détails</button>
             <button type="button" onclick="hideForm('details-reservation')">Annuler</button>
         </form>
@@ -182,6 +183,24 @@
         function hideForm(formId) {
             document.getElementById(formId).classList.remove('active');
         }
+        function redirectToCatwayDetails(event) {
+        event.preventDefault(); // Empêche la soumission classique du formulaire
+        const id = document.getElementById('catway-id').value;
+        if (id) {
+            window.location.href = `/catways/${id}`; // Redirige vers /catways/:id
+        } else {
+            alert('Veuillez entrer un ID valide.');
+        }
+    }
+    function redirectToReservationDetails(event) {
+        event.preventDefault(); // Empêche la soumission classique du formulaire
+        const id = document.getElementById('reservation-id').value;
+        if (id) {
+            window.location.href = `/reservations/${id}`; // Redirige vers /reservations/:id
+        } else {
+            alert('Veuillez entrer un ID valide.');
+        }
+    }
     </script>
 </body>
 </html>

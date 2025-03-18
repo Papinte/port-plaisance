@@ -142,8 +142,33 @@ router.post('/catways/delete', async (req, res) => {
 router.post('/reservations/create', async (req, res) => {
     console.log('Requête POST /reservations/create avec:', req.body);
     try {
-        const { clientName, boatName, checkIn, checkOut } = req.body;
-        const reservation = new Reservation({ clientName, boatName, checkIn, checkOut });
+        const { catwayNumber, clientName, boatName, checkIn, checkOut } = req.body;
+
+        // Vérifier si les dates sont valides
+        const checkInDate = new Date(checkIn);
+        const checkOutDate = new Date(checkOut);
+        if (checkInDate >= checkOutDate) {
+            throw new Error('La date de début doit être antérieure à la date de fin');
+        }
+
+        // Vérifier les conflits de réservation
+        const overlappingReservations = await Reservation.find({
+            catwayNumber: catwayNumber,
+            $or: [
+                { checkIn: { $lte: checkOutDate }, checkOut: { $gte: checkInDate } }, // Chevauchement
+            ],
+        });
+        if (overlappingReservations.length > 0) {
+            throw new Error(`Le catway ${catwayNumber} est déjà réservé pour cette période.`);
+        }
+
+        // Vérifier si le catway existe
+        const catway = await Catway.findOne({ catwayNumber });
+        if (!catway) {
+            throw new Error(`Le catway numéro ${catwayNumber} n'existe pas.`);
+        }
+
+        const reservation = new Reservation({ catwayNumber, clientName, boatName, checkIn, checkOut });
         await reservation.save();
         const message = `Réservation pour ${clientName} créée avec succès ! ID: ${reservation._id}`;
         res.render('dashboard', { title: 'Tableau de bord', error: null, message });
