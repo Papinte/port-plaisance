@@ -1,11 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
+const { exec } = require('child_process');
+const { execSync } = require('child_process');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+let PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -89,6 +91,23 @@ app.use((err, req, res, next) => {
 
 module.exports = app;
 
-app.listen(PORT, () => {
-    console.log(`Serveur démarré sur le port ${PORT}`);
-});
+// Exécute les tests avant de démarrer le serveur
+if (require.main === module) {
+    try {
+        const testOutput = execSync('npm test', { stdio: 'pipe', encoding: 'utf-8' });
+        console.log('Tests réussis:', testOutput);
+        // Vérifie si le port 3000 est libre
+        exec(`netstat -aon | findstr :${PORT}`, (err, stdout, stderr) => {
+            if (err || stdout) {
+                console.warn('Port ${PORT} déjà utilisé, essai avec un port alternatif (3001)...');
+                PORT = 3001; // Change de port si 3000 est occupé
+            }
+            app.listen(PORT, () => {
+                console.log(`Serveur démarré sur le port ${PORT}`);
+            });
+        });
+    } catch (error) {
+        console.error('Tests échoués:', error.message);
+        process.exit(1); // Arrête si les tests échouent
+    }
+}

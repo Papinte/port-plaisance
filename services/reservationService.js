@@ -1,7 +1,9 @@
 const Reservation = require('../models/Reservation');
 
 exports.getAllReservations = async (catwayId) => {
-    return await Reservation.find({ catwayNumber: catwayId });
+    // catwayId est un ObjectId, mais on le convertit en nombre si nécessaire
+    const catwayNumber = await require('../models/Catway').findById(catwayId).then(c => c.catwayNumber);
+    return await Reservation.find({ catwayNumber: catwayNumber });
 };
 
 exports.getReservationById = async (id) => {
@@ -12,11 +14,23 @@ exports.getReservationById = async (id) => {
 
 exports.createReservation = async (catwayId, reservationData) => {
     const { clientName, boatName, checkIn, checkOut } = reservationData;
-    if (!catwayId || !clientName || !boatName || !checkIn || !checkOut) throw new Error('Tous les champs sont requis');
+    if (!clientName || !boatName || !checkIn || !checkOut) {
+        throw new Error('Tous les champs (clientName, boatName, checkIn, checkOut) sont requis');
+    }
+    const catway = await require('../models/Catway').findById(catwayId);
+    if (!catway) throw new Error('Catway non trouvé');
     const checkInDate = new Date(checkIn);
     const checkOutDate = new Date(checkOut);
-    if (checkInDate >= checkOutDate) throw new Error('La date de début doit être antérieure à la date de fin');
-    const reservation = new Reservation({ catwayNumber: catwayId, ...reservationData });
+    if (isNaN(checkInDate.getTime()) || isNaN(checkOutDate.getTime())) {
+        throw new Error('Dates invalides');
+    }
+    if (checkInDate >= checkOutDate) {
+        throw new Error('La date de début doit être antérieure à la date de fin');
+    }
+    const reservation = new Reservation({ 
+        catwayNumber: catway.catwayNumber, 
+        ...reservationData 
+    });
     return await reservation.save();
 };
 

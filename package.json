@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "mocha tests/**/*.js",
+    "start-with-tests": "mocha tests/**/*.js && node index.js",
     "import:data": "mongoimport --jsonArray --db port-de-plaisance --collection catways --file catways.json && mongoimport --jsonArray --db port-de-plaisance --collection reservations --file reservations.json",
     "start": "node index.js"
   },
