@@ -89,6 +89,12 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Une erreur est survenue sur le serveur.' });
 });
 
+app.post('/logout', (req, res) => {
+    // Supprime le cookie contenant le token JWT
+    res.clearCookie('token'); // Remplace 'token' par le nom exact de ton cookie si différent
+    res.redirect('/'); // Redirige vers la page d'accueil ou de connexion
+})
+
 module.exports = app;
 
 // Exécute les tests avant de démarrer le serveur
