@@ -90,30 +90,26 @@ app.use((err, req, res, next) => {
 });
 
 app.post('/logout', (req, res) => {
-    // Supprime le cookie contenant le token JWT
-    res.clearCookie('token'); // Remplace 'token' par le nom exact de ton cookie si différent
-    res.redirect('/'); // Redirige vers la page d'accueil ou de connexion
+    res.clearCookie('token');
+    res.redirect('/');
 })
 
 module.exports = app;
 
 // Exécute les tests avant de démarrer le serveur
 if (require.main === module) {
-    try {
-        const testOutput = execSync('npm test', { stdio: 'pipe', encoding: 'utf-8' });
-        console.log('Tests réussis:', testOutput);
-        // Vérifie si le port 3000 est libre
-        exec(`netstat -aon | findstr :${PORT}`, (err, stdout, stderr) => {
-            if (err || stdout) {
-                console.warn('Port ${PORT} déjà utilisé, essai avec un port alternatif (3001)...');
-                PORT = 3001; // Change de port si 3000 est occupé
-            }
-            app.listen(PORT, () => {
-                console.log(`Serveur démarré sur le port ${PORT}`);
-            });
-        });
-    } catch (error) {
-        console.error('Tests échoués:', error.message);
-        process.exit(1); // Arrête si les tests échouent
+    // Exécute les tests seulement en local
+    if (process.env.NODE_ENV !== 'production') {
+        try {
+            const testOutput = execSync('npm test', { stdio: 'pipe', encoding: 'utf-8' });
+            console.log('Tests réussis:', testOutput);
+        } catch (error) {
+            console.error('Tests échoués:', error.message);
+            process.exit(1);
+        }
     }
+    // Démarre le serveur dans tous les cas
+    app.listen(PORT, () => {
+        console.log(`Serveur démarré sur le port ${PORT}`);
+    });
 }
