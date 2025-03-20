@@ -1,6 +1,18 @@
+/**
+ * @module authMiddleware
+ * @description Middleware pour gérer l'authentification via JWT.
+ */
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
+
+/**
+ * @desc Vérifie le token JWT dans l'en-tête Authorization
+ * @param {Object} req - Requête HTTP
+ * @param {Object} res - Réponse HTTP
+ * @param {Function} next - Fonction pour passer au prochain middleware
+ * @throws {401} Token manquant ou invalide
+ */
 const authenticateToken = (req, res, next) => {
     let token = req.headers['authorization']?.split(' ')[1];
     console.log('Authorization header:', req.headers['authorization']);

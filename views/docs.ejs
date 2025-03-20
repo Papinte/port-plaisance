@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation de l'API - Port de Plaisance</title>
+</head>
+<body>
+    <body>
+        <h1>Documentation de l'API - Port de Plaisance</h1>
+    
+        <div class="section">
+            <h2>Vue d'ensemble</h2>
+            <p>L'API du Port de Plaisance permet de gérer les catways et les réservations pour un port de plaisance. Elle offre des fonctionnalités pour créer, lire, mettre à jour et supprimer des catways, ainsi que pour gérer les réservations associées. L'API est privée et nécessite une authentification via un token JWT.</p>
+            <p>Base URL : <code>/api</code></p>
+        </div>
+    
+        <div class="section">
+            <h2>Tutoriel</h2>
+            <h3>1. Authentification</h3>
+            <p>Pour utiliser l'API, vous devez d'abord vous authentifier :</p>
+            <ul>
+                <li>Enregistrez un utilisateur avec <code>POST /auth/register</code> :</li>
+                <pre>curl -X POST http://localhost:3001/auth/register -H "Content-Type: application/json" -d '{"name":"Utilisateur","email":"user@example.com","password":"motdepasse"}'</pre>
+                <li>Connectez-vous avec <code>POST /auth/login</code> pour obtenir un token :</li>
+                <pre>curl -X POST http://localhost:3001/auth/login -H "Content-Type: application/json" -d '{"email":"user@example.com","password":"motdepasse"}'</pre>
+                <p>Réponse : <code>{"token":"votre_token_jwt"}</code></p>
+                <li>Utilisez le token dans l'en-tête <code>Authorization: Bearer votre_token_jwt</code> pour toutes les requêtes protégées.</li>
+            </ul>
+    
+            <h3>2. Créer un catway</h3>
+            <p>Utilisez <code>POST /api/catways</code> pour créer un catway :</p>
+            <pre>curl -X POST http://localhost:3001/api/catways -H "Authorization: Bearer votre_token_jwt" -H "Content-Type: application/json" -d '{"catwayNumber":1,"type":"long","catwayState":"disponible"}'</pre>
+    
+            <h3>3. Réserver un catway</h3>
+            <p>Utilisez <code>POST /api/catways/:id/reservations</code> pour créer une réservation :</p>
+            <pre>curl -X POST http://localhost:3001/api/catways/votre_catway_id/reservations -H "Authorization: Bearer votre_token_jwt" -H "Content-Type: application/json" -d '{"clientName":"Jean Dupont","boatName":"Le Bateau","checkIn":"2025-03-19T10:00:00Z","checkOut":"2025-03-20T10:00:00Z"}'</pre>
+        </div>
+    
+        <div class="section">
+            <h2>Exemples</h2>
+            <div class="example">
+                <h3>Lister tous les catways</h3>
+                <p>Requête : <code>GET /api/catways</code></p>
+                <pre>curl -X GET http://localhost:3001/api/catways -H "Authorization: Bearer votre_token_jwt"</pre>
+                <p>Réponse :</p>
+                <pre>[{"_id":"votre_catway_id","catwayNumber":1,"type":"long","catwayState":"disponible"}]</pre>
+            </div>
+            <div class="example">
+                <h3>Supprimer une réservation</h3>
+                <p>Requête : <code>DELETE /api/catways/:id/reservations/:reservationId</code></p>
+                <pre>curl -X DELETE http://localhost:3001/api/catways/votre_catway_id/reservations/votre_reservation_id -H "Authorization: Bearer votre_token_jwt"</pre>
+                <p>Réponse :</p>
+                <pre>{"message":"Réservation supprimée avec succès !"}</pre>
+            </div>
+        </div>
+    
+        <div class="section">
+            <h2>Glossaire</h2>
+            <ul>
+                <li><strong>Catway :</strong> Emplacement dans le port où un bateau peut être amarré.</li>
+                <li><strong>Réservation :</strong> Engagement d'un client pour occuper un catway pendant une période donnée.</li>
+                <li><strong>JWT :</strong> JSON Web Token, utilisé pour l'authentification dans l'API.</li>
+                <li><strong>API REST :</strong> Interface de programmation qui suit les principes REST pour interagir avec les ressources.</li>
+            </ul>
+        </div>
+    </body>
+</body>
+</html>
